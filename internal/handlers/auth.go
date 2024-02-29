@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) signIn() gin.HandlerFunc {
+func (h *Handler) signUp() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user *models.Register
 
@@ -25,5 +25,28 @@ func (h *Handler) signIn() gin.HandlerFunc {
 		}
 
 		c.JSON(200, gin.H{"Status": "User successfuly create"})
+	}
+}
+
+func (h *Handler) signIn() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var user *models.Login
+
+		err := json.NewDecoder(c.Request.Body).Decode(&user)
+		if err != nil {
+			
+			c.JSON(400, gin.H{"error": fmt.Sprintf("Bad request (%s)", err.Error())})
+			return
+		}
+
+		cookie, err := h.Service.SigninService(user)
+		if err != nil {
+			c.JSON(400, gin.H{"error": fmt.Sprintf("Bad request (%s)", err.Error())})
+			return
+		}
+
+		c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, cookie.Domain, cookie.Secure, cookie.HttpOnly)
+		c.JSON(200, gin.H{"Status": "User successfuly signed"})
+
 	}
 }

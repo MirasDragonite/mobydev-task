@@ -27,9 +27,9 @@ func (r *AuthRepository) CreateUser(user *models.Register) error {
 func (r *AuthRepository) GetUserBy(element, from string) (models.User, error) {
 	var user models.User
 
-	query := fmt.Sprintf("SELECT * FROM users WHERE %s=$1 ", from)
+	query := fmt.Sprintf("SELECT id,email,hash_password FROM users WHERE %s=$1 ", from)
 	row := r.db.QueryRow(query, element)
-	err := row.Scan(&user.Id, &user.Username, &user.Email, &user.HashedPassword, &user.MobilePhone, &user.BirthDate)
+	err := row.Scan(&user.Id, &user.Email, &user.HashedPassword)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -37,9 +37,9 @@ func (r *AuthRepository) GetUserBy(element, from string) (models.User, error) {
 }
 
 func (r *AuthRepository) CreateSession(session *models.Session) error {
-	query := `INSERT INTO sessions(id,user_id,token,expired_date) VALUES($1,$2,$3,$4)`
+	query := `INSERT INTO sessions(user_id,token,expired_date) VALUES($1,$2,$3)`
 
-	_, err := r.db.Exec(query, session.Id, session.UserId, session.Token, session.ExpiredDate)
+	_, err := r.db.Exec(query, session.UserId, session.Token, session.ExpiredDate)
 	if err != nil {
 		return err
 	}
@@ -58,4 +58,17 @@ func (r *AuthRepository) GetSessionByToken(token string) (models.Session, error)
 	}
 
 	return session, nil
+}
+
+func (r *AuthRepository) GetUserByID(id int64) (models.User, error) {
+	var user models.User
+
+	query := `SELECT * FROM users WHERE id=$1 `
+	row := r.db.QueryRow(query, id)
+	err := row.Scan(&user.Id, &user.Username, &user.Email, &user.HashedPassword, &user.MobilePhone, &user.BirthDate)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
 }
