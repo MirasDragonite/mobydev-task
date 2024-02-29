@@ -2,12 +2,18 @@ package repository
 
 import (
 	"database/sql"
+	"miras/internal/models"
 )
 
-type Repository struct {
-	DB *sql.DB
+type Auth interface {
+	CreateUser(user *models.Register) error
+	CreateSession(session *models.Session) error
+	GetSessionByToken(token string) (models.Session, error)
+	GetUserBy(element, from string) (models.User, error)
 }
 
+type Repository struct{ Auth }
+
 func NewRepository(db *sql.DB) *Repository {
-	return &Repository{DB: db}
+	return &Repository{Auth: newAuthRepo(db)}
 }

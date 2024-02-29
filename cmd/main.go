@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"miras/internal/handlers"
 	"miras/internal/repository"
 	"miras/internal/services"
@@ -12,7 +11,7 @@ func main() {
 	defer db.Close()
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	repo := repository.NewRepository(db)
@@ -21,5 +20,8 @@ func main() {
 
 	handler.Router()
 
-	handler.Gin.Run("localhost:8000")
+	err = handler.Gin.Run("localhost:8000")
+	if err != nil {
+		panic(err)
+	}
 }

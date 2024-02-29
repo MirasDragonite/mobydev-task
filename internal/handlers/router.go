@@ -16,5 +16,5 @@ func NewHandler(service *services.Services) *Handler {
 }
 
 func (h *Handler) Router() {
-	// h.Gin.POST()
+	h.Gin.POST("/auth/sign-up", h.signIn())
 }
