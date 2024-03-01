@@ -13,6 +13,8 @@ type Auth interface {
 
 type Edit interface {
 	GetUserByToken(token string) (models.User, error)
+	GetUserData(token string, id int) (models.UserEdit, error)
+	EditUserData(token string, editUser models.UserEdit, id int) error
 }
 type Services struct {
 	Auth

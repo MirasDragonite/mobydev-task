@@ -1,12 +1,14 @@
 package models
 
+import "time"
+
 type User struct {
 	Id             int64  `json:"id"`
 	Username       string `json:"username"`
 	Email          string `json:"email"`
 	HashedPassword string `json:"password"`
 	MobilePhone    string `json:"mobilePhone"`
-	BirthDate      string `json:"createdDate"`
+	BirthDate      time.Time
 }
 
 type Login struct {
@@ -25,4 +27,11 @@ type Session struct {
 	UserId      int64
 	Token       string
 	ExpiredDate string
+}
+
+type UserEdit struct {
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	PhoneNum  string `json:"phone_number"`
+	BirthDate string `json:"birth_date"`
 }

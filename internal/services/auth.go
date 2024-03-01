@@ -61,7 +61,7 @@ func (s *AuthService) SigninService(data *models.Login) (http.Cookie, error) {
 	session := models.Session{
 		UserId:      user.Id,
 		Token:       token,
-		ExpiredDate: time.Now().Add(time.Hour * 24).Format("2006-01-02 15:04:05"),
+		ExpiredDate: time.Now().Add(time.Minute * 30).Format("2006-01-02 15:04:05"),
 	}
 	err = s.repo.Auth.CreateSession(&session)
 	if err != nil {
@@ -86,7 +86,7 @@ func createToken(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"username": username,
-			"exp":      time.Now().Add(time.Hour * 24).Unix(),
+			"exp":      time.Now().Add(time.Minute * 30).Unix(),
 		})
 
 	tokenString, err := token.SignedString(secretKey)
