@@ -35,23 +35,43 @@ func (r *AuthRepository) GetUserBy(element, from string) (models.User, error) {
 
 	err := row.Scan(&user.Id, &user.Username, &user.Email, &user.HashedPassword, &user.MobilePhone, &birthdDate)
 	if err != nil {
-
 		return models.User{}, err
 	}
 	if strings.TrimSpace(birthdDate) != "" {
 		user.BirthDate, err = time.Parse("02 January 2006", birthdDate)
 		if err != nil {
-
 			return models.User{}, err
 		}
 	}
 	return user, nil
 }
 
-func (r *AuthRepository) CreateSession(session *models.Session) error {
+func (r *AuthRepository) CreateSession(user models.User, token, expiredDate string) error {
 	query := `INSERT INTO sessions(user_id,token,expired_date) VALUES($1,$2,$3)`
 
-	_, err := r.db.Exec(query, session.UserId, session.Token, session.ExpiredDate)
+	_, err := r.db.Exec(query, user.Id, token, expiredDate)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *AuthRepository) DeleteToken(token string) error {
+	query := `DELETE FROM sessions WHERE token=$1`
+
+	_, err := r.db.Exec(query, token)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *AuthRepository) UpdateToken(user models.User, token, expaired_data string) error {
+	query := `UPDATE sessions SET token=$1 ,expaired_date=$2 WHERE user_id=$3`
+
+	_, err := r.db.Exec(query, &token, &expaired_data, &user.Id)
 	if err != nil {
 		return err
 	}
@@ -84,10 +104,22 @@ func (r *AuthRepository) GetUserByID(id int64) (models.User, error) {
 	if strings.TrimSpace(birthdDate) != "" {
 		user.BirthDate, err = time.Parse("02 January 2006", birthdDate)
 		if err != nil {
-
 			return models.User{}, err
 		}
 	}
 
 	return user, nil
+}
+
+func (r *AuthRepository) GetSession(userID int64) (models.Session, error) {
+	var session models.Session
+
+	query := `SELECT * FROM tokens WHERE user_id=$1`
+
+	row := r.db.QueryRow(query, userID)
+	err := row.Scan(&session.Id, &session.UserId, &session.Token, &session.ExpiredDate)
+	if err != nil {
+		return models.Session{}, err
+	}
+	return session, nil
 }
