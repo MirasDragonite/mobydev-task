@@ -19,7 +19,7 @@ git clone https://github.com/MirasDragonite/mobydev-task.git
 ```
 go run ./cmd/main.go
 ```
-Open the link in browser
+To fast access you can use Postman and start working with this URL
 ```
 localhost:8000
 ```
